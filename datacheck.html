@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSVP Invitation</title>
+    
+    <!-- Firebase CDN -->
+    <script type="module">
+      // Initialize Firebase SDK
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+      import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCGKmYWQZMYuH7XmSod1R1dvcbQPgRJNA0",
+        authDomain: "ian-rsvp.firebaseapp.com",
+        projectId: "ian-rsvp",
+        storageBucket: "ian-rsvp.firebasestorage.app",
+        messagingSenderId: "897606782219",
+        appId: "1:897606782219:web:47b8ea233f38ddef80660e",
+        measurementId: "G-WEXT752N34"
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+
+      // Initialize Firestore
+      const db = getFirestore(app);
+      
+      // Function to fetch RSVP data
+      window.getRSVPs = async function() {
+        const querySnapshot = await getDocs(collection(db, "rsvp"));
+        const rsvps = [];
+
+        querySnapshot.forEach((doc) => {
+          const rsvpData = doc.data();
+          const timestamp = rsvpData.timestamp ? rsvpData.timestamp.toDate() : "No timestamp"; // Convert timestamp
+          rsvps.push({
+            name: rsvpData.name,
+            response: rsvpData.response,
+            timestamp: timestamp
+          });
+        });
+
+        // Display results on screen
+        const rsvpList = document.getElementById("rsvpList");
+        rsvpList.innerHTML = ''; // Clear existing content
+
+        rsvps.forEach((rsvp) => {
+          const listItem = document.createElement("li");
+          listItem.textContent = `${rsvp.name} - ${rsvp.response}`;
+          //listItem.textContent = `${rsvp.name} - ${rsvp.response} - Submitted at: ${rsvp.timestamp}`;
+          rsvpList.appendChild(listItem);
+        });
+      }
+    </script>
+</head>
+<body>
+    <h1>Birthday Party RSVP</h1>
+
+    <button onclick="getRSVPs()">View RSVP List</button>
+
+    <h2>RSVP List</h2>
+    <ul id="rsvpList"></ul>
+
+</body>
+</html>
